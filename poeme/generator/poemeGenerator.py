@@ -7,7 +7,6 @@
 
 ## Introduction
 # Importations
-import sqlite3
 from django.db import connections
 
 # Initialisations
@@ -57,7 +56,6 @@ def analyse(nbsyll, dersyll = ''):
     * nbsyll sera automatiquement mis entre 1 et 12
     """
 
-    print(nbsyll)
     if nbsyll < 2:
         # Cas de une syllabe
         if dersyll == '':
@@ -152,7 +150,6 @@ def analyse(nbsyll, dersyll = ''):
                 ORDER BY freqfilms DESC LIMIT 1""".format(mot.replace(",", "")))
 
                 info = cur.fetchone()
-            print(info)
 
             if len(mot) == 1 and info[6][0] == "C":
                 nouveau += phraselist[i] + "'"
@@ -244,12 +241,11 @@ def analyse(nbsyll, dersyll = ''):
 
 def poeme_texte(rimes, nbsyll):
     """
-    * Génère des paragraphes de rime
-    * rimes : "A_B_B_A_" = rimes embrassées, "A_B_A_B_" = rimes croisées
-    * Forcer phonétique des rimes : rimes = "t@t_se_se_t@t" rime avec la phonétique donnée
-    * nbsyll = [12,10,8] : 1er vers = 12 syllabes, 2e vers = 10 syllabes, 3e vers = 8 syllabes
-    * Suppose rimes et nbsyll de la bonne forme (syllabes existent, nbsyll des entiers, nb lettre _ rime = len(nbsyll) )"""
-    # Liste erreur : voir quelles phrases posent problème
+    * Génère des paragraphes de rime * rimes : "A_B_B_A_" = rimes embrassées, "A_B_A_B_" = rimes croisées * Forcer
+    phonétique des rimes : rimes = "t@t_se_se_t@t" rime avec la phonétique donnée * nbsyll = [12,10,8] : 1er vers =
+    12 syllabes, 2e vers = 10 syllabes, 3e vers = 8 syllabes * Suppose rimes et nbsyll de la bonne forme (syllabes
+    existent, nbsyll des entiers, nb lettre _ rime = len(nbsyll) )"""
+    # Liste erreur : voir quelles phrases posent problèmes
     texteChargement = "Chargement ...\nVers déjà fait :\n\n"
     # Initialisations variables
     dictsyll = dict()
@@ -259,7 +255,6 @@ def poeme_texte(rimes, nbsyll):
     # Création poème
     for paragraphe in rimes:
         for verssyll in paragraphe.split("_")[:-1]:
-            print(nbsyll)
             if "." in verssyll:
                 phrase = analyse(nbsyll[i], verssyll.strip("."))
             elif verssyll in dictsyll:
@@ -376,13 +371,11 @@ def prev(forme, sylltaille, rime):
         return None, err1, err2
 
     forme = forme.replace(" ", "") # Variable globale de la forme pour être afficheé dans chargement
-    print(forme)
     return texte, err1, err2
 
 def main(rimes = "ABBA", syll = "1=12", rime = ""):
     total, err1, err2 = prev(rimes, syll, rime)
     total = total.split("\n")
-    print(total)
     nbsyll = []
     forme = ""
     for formeVers in total:
@@ -393,7 +386,6 @@ def main(rimes = "ABBA", syll = "1=12", rime = ""):
             forme += " "
     try:
         texte = poeme_texte(forme, nbsyll).split("\n")
-        print(texte)
     except:
         err1 = "Erreur, Veuillez recommencer."
         print(err1)

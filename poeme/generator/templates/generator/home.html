@@ -20,20 +20,25 @@
                 </header>
                 <a href="{% url 'aide' %}" target="_blank">Aide phonétique</a>
 
-            <form action="" method="post" novalidate>
+            <form id="my-form" action="" method="post" novalidate>
                 {% csrf_token %}
                 {{ form.as_p }}
                 <input type="submit" value="Générer" class="button">
             </form>
-                <p>
+
+                <div id="status"></div>
+
+                <p id="result">
                 {% for ligne in poem %}
-                    {{ligne}}</br>
+{{ligne}}</br>
                 {% endfor %}
                 </p>
-                <p style="color:#FF0000";>
-                    {{err1}}</br>
-                    {{err2}}
-                </p>
+
+                <button class="button" id="telecharger" onclick="download()" style="display: none;">Télécharger</button>
+
+                <div id="err1" style="color:#FF0000";>{{err1}}</div>
+                <div id="err2" style="color:#FF0000";>{{err2}}</div>
+                <div id="err3" style="color:#FF0000";></div>
 
             </div>
             <span class="image"><img src="/static/generator/images/plume.png" alt="image plume" /></span>
@@ -61,5 +66,9 @@
         </footer>
     </section>
 
+{% endblock %}
 
+{% block javascript %}
+<script src="{% static 'generator/assets/js/prev.js' %}"></script>
+<script>console.log({{poem}});</script>
 {% endblock %}
