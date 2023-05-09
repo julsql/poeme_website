@@ -1,0 +1,38 @@
+{% extends 'generator/base.html' %}
+{% load static %}
+
+{% block nav %}
+<ul>
+    <li><a href="{% url 'home' %}" class="active">Générateur</a></li>
+</ul>
+{% endblock %}
+
+{% block main %}
+
+    <section id="intro" class="main">
+        <div class="spotlight">
+            <div class="content">
+                <p>
+                    Veuillez n'utiliser que ces symboles (Syllabes ou API), sinon la page crash.
+                    <table>
+                    <tr>
+                    <td>Courant</td>
+                    <td>Syllabes</td>
+                    <td>API</td>
+                    <td>Occurence</td>
+                    </tr>
+                    {% for ligne in aidephon %}
+                        <tr>
+                        <td> {{ligne.courant}} </td>
+                        <td> {{ligne.dersyll}} </td>
+                        <td> {{ligne.API}} </td>
+                        <td> {{ligne.nboccurence}} </td>
+                        </tr>
+                    {% endfor %}
+                    </table>
+                 </p>
+            </div>
+
+        </div>
+    </section>
+{% endblock %}

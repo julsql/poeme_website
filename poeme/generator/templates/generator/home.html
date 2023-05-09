@@ -1,0 +1,65 @@
+{% extends 'generator/base.html' %}
+{% load static %}
+
+{% block nav %}
+<ul>
+    <li><a href="#intro" class="active">Générateur</a></li>
+    <li><a href="#first">Informations</a></li>
+    <li><a href="#cta">Application</a></li>
+</ul>
+{% endblock %}
+
+{% block main %}
+
+<!-- Introduction -->
+    <section id="intro" class="main">
+        <div class="spotlight">
+            <div class="content">
+                <header class="major">
+                    <h2>Générateur</h2>
+                </header>
+                <a href="{% url 'aide' %}" target="_blank">Aide phonétique</a>
+
+            <form action="" method="post" novalidate>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Envoyer" class="button">
+            </form>
+                <p>
+                {% for ligne in poem %}
+                    {{ligne}}</br>
+                {% endfor %}
+                </p>
+                <p style="color:#FF0000";>
+                    {{err1}}</br>
+                    {{err2}}
+                </p>
+
+            </div>
+            <span class="image"><img src="/static/generator/images/plume.png" alt="image plume" /></span>
+        </div>
+    </section>
+
+    <section id="first" class="main special">
+        <header class="major">
+            <h2>Informations</h2>
+            <p>Attention : Le temps pour générer un poème pouvant être assez long, ne rechargez pas la page avant la fin du chargement.</p>
+            <p>Utilisation du générateur de poème :<br/>Pour générer le poème, il faut donner sa forme (un sonnet est ABBA CDDC EEF GGF), vous pouvez aussi donner les pieds de chaque vers (par défaut 12 pieds), et imposer des rimes spéciales (vous pouvez accéder à l'ensemble des rimes possible vers la page <a href="{% url 'aide' %}" target="_blank">Aide phonétique</a>).<br/>Veuillez bien respecter la mise en forme.</p>
+        </header>
+    </section>
+
+<!-- Get Started -->
+    <section id="cta" class="main special">
+        <header class="major">
+            <h2>Application</h2>
+            <p>Vous souhaitez utiliser Poème hors ligne ? C'est possible avec l'application pour ordinateurs !</p>
+        </header>
+        <footer class="major">
+            <ul class="actions special">
+                <li><a href="{% url 'app' %}" class="button primary" title="Page application">Application</a></li>
+            </ul>
+        </footer>
+    </section>
+
+
+{% endblock %}
