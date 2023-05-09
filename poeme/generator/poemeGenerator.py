@@ -395,7 +395,7 @@ def main(rimes = "ABBA", syll = "1=12", rime = ""):
         texte = poeme_texte(forme, nbsyll).split("\n")
         print(texte)
     except:
-        err1 = "Problème lors que la génération du poème"
+        err1 = "Erreur, Veuillez recommencer."
         print(err1)
         return None, err1, err2
     else:
