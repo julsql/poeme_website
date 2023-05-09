@@ -393,13 +393,12 @@ def main(rimes = "ABBA", syll = "1=12", rime = ""):
             forme += formeVers.split(" ")[-1] + "_"
         else:
             forme += " "
-    texte = poeme_texte(forme, nbsyll).split("\n")
-    """try:
+    try:
         texte = poeme_texte(forme, nbsyll).split("\n")
         print(texte)
     except:
         err1 = "Problème lors que la génération du poème"
         print(err1)
         return None
-    else:"""
-    return texte
+    else:
+        return texte
