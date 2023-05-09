@@ -8,51 +8,45 @@
 ## Introduction
 # Importations
 import sqlite3
-import sys
+from django.db import connections
 
 # Initialisations
 
-path = sys.argv[0]
-print(path)
-path = "/".join(path.split("/")[:-1])
-database = path + "/generator/PoemeDB.sqlite3"
 symboles = ",;:…./\&'§@#!()-_$*¥€%£?"
 count = 0
-print(database)
-conn = sqlite3.connect(database)
-cur = conn.cursor()
-
 err1 = ""
 err2 = ""
 
 # Création liste des mots possibles
+
 motPossible = []
-cur.execute("""SELECT DISTINCT ortho FROM MOTS""")
-ortho = cur.fetchall()
-for mot1 in ortho:
-    motPossible.append(mot1[0])
+
+with connections['mots'].cursor() as cursor:
+    cursor.execute('SELECT * FROM MOTS')
+    ortho = cursor.fetchall()
+    # Traitement des résultats
+    for mot1 in ortho:
+        motPossible.append(mot1[0])
 
 # Création syllPossible : dictionnaire des syllabes possibles présentes plus de 10 fois avec les associtations API, courant vers la notation de la base de données
 # Création aidephon : texte à afficher dans fenêtre "Aide Phonétique", syllabes présentes plus de 20 fois
 syllPossible = dict()
 aidephon = []
 
-cur.execute("""
-SELECT dersyll, courant, API, count(*) as nboccurence
-FROM SYLLABES, MOTS
-WHERE SYLLABES.id = MOTS.iddersyll
-GROUP BY iddersyll
-HAVING COUNT(iddersyll) >= 10
-ORDER BY LOWER(dersyll) ASC""")
+with connections['mots'].cursor() as cursor:
+    cursor.execute("""
+    SELECT dersyll, courant, API, count(*) as nboccurence
+    FROM SYLLABES, MOTS
+    WHERE SYLLABES.id = MOTS.iddersyll
+    GROUP BY iddersyll
+    HAVING COUNT(iddersyll) >= 10
+    ORDER BY LOWER(dersyll) ASC""")
+    syllaide = cursor.fetchall()
 
-syllaide = cur.fetchall()
-
-for syll in syllaide:
-    syllPossible[syll[0]] = [syll[0]]
-    syllPossible[syll[2]] = [syll[0]]
-    aidephon.append({'courant': syll[0], 'dersyll': syll[1], 'API': syll[2], 'nboccurence': syll[3]})
-conn.commit()
-conn.close
+    for syll in syllaide:
+        syllPossible[syll[0]] = [syll[0]]
+        syllPossible[syll[2]] = [syll[0]]
+        aidephon.append({'courant': syll[0], 'dersyll': syll[1], 'API': syll[2], 'nboccurence': syll[3]})
 
 ## Fonctions
 
