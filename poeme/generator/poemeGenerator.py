@@ -21,32 +21,33 @@ err2 = ""
 
 motPossible = []
 
-with connections['mots'].cursor() as cursor:
-    cursor.execute('SELECT * FROM MOTS')
-    ortho = cursor.fetchall()
-    # Traitement des résultats
-    for mot1 in ortho:
-        motPossible.append(mot1[0])
+with connections['mots'].cursor() as cur:
+    cur.execute('SELECT * FROM MOTS')
+    ortho = cur.fetchall()
+
+# Traitement des résultats
+for mot1 in ortho:
+    motPossible.append(mot1[0])
 
 # Création syllPossible : dictionnaire des syllabes possibles présentes plus de 10 fois avec les associtations API, courant vers la notation de la base de données
 # Création aidephon : texte à afficher dans fenêtre "Aide Phonétique", syllabes présentes plus de 20 fois
 syllPossible = dict()
 aidephon = []
 
-with connections['mots'].cursor() as cursor:
-    cursor.execute("""
+with connections['mots'].cursor() as cur:
+    cur.execute("""
     SELECT dersyll, courant, API, count(*) as nboccurence
     FROM SYLLABES, MOTS
     WHERE SYLLABES.id = MOTS.iddersyll
     GROUP BY iddersyll
     HAVING COUNT(iddersyll) >= 10
     ORDER BY LOWER(dersyll) ASC""")
-    syllaide = cursor.fetchall()
+    syllaide = cur.fetchall()
 
-    for syll in syllaide:
-        syllPossible[syll[0]] = [syll[0]]
-        syllPossible[syll[2]] = [syll[0]]
-        aidephon.append({'courant': syll[0], 'dersyll': syll[1], 'API': syll[2], 'nboccurence': syll[3]})
+for syll in syllaide:
+    syllPossible[syll[0]] = [syll[0]]
+    syllPossible[syll[2]] = [syll[0]]
+    aidephon.append({'courant': syll[0], 'dersyll': syll[1], 'API': syll[2], 'nboccurence': syll[3]})
 
 ## Fonctions
 
@@ -57,9 +58,6 @@ def analyse(nbsyll, dersyll = ''):
     * Suppose que dersyll est possible et que nbsyll est un entier
     * nbsyll sera automatiquement mis entre 1 et 12
     """
-
-    conn = sqlite3.connect(database)
-    cur = conn.cursor()
 
     print(nbsyll)
     if nbsyll < 2:
@@ -73,24 +71,26 @@ def analyse(nbsyll, dersyll = ''):
         else:
             req = """AND SYLLABES.dersyll = '%s'""" % dersyll
 
-        cur.execute("""
-        SELECT ortho, dersyll
-        FROM MOTS JOIN SYLLABES ON iddersyll = SYLLABES.id
-        WHERE nbsyll = 1
-        AND length(ortho) > 3
-        %s
-        ORDER BY RANDOM() LIMIT 1;"""%req)
-        newWords = cur.fetchone()
-        nouveau = newWords[0]
-        dersyll = newWords[1]
+        with connections['mots'].cursor() as cur:
+            cur.execute("""
+            SELECT ortho, dersyll
+            FROM MOTS JOIN SYLLABES ON iddersyll = SYLLABES.id
+            WHERE nbsyll = 1
+            AND length(ortho) > 3
+            %s
+            ORDER BY RANDOM() LIMIT 1;"""%req)
+            newWords = cur.fetchone()
 
-        cur.execute("""
-        SELECT PONCT
-        FROM PONCTUATION
-        WHERE freq > (SELECT abs(random() / 10000000000000000000))
-        ORDER BY random();""")
+            nouveau = newWords[0]
+            dersyll = newWords[1]
 
-        ponct = cur.fetchone()[0]
+            cur.execute("""
+            SELECT PONCT
+            FROM PONCTUATION
+            WHERE freq > (SELECT abs(random() / 10000000000000000000))
+            ORDER BY random();""")
+
+            ponct = cur.fetchone()[0]
 
         nouveau = nouveau[0].upper() + nouveau[1:] + ponct + "\n"
         return (nouveau, dersyll)
@@ -100,12 +100,14 @@ def analyse(nbsyll, dersyll = ''):
         nbsyll = 12
 
     syllabe = dersyll
-    cur.execute("""
-    SELECT id, phrase
-    FROM PHRASES
-    WHERE nbsyllabe = ?
-    ORDER BY RANDOM() LIMIT 1""", (nbsyll,))
-    [id, phrase] = cur.fetchone()
+
+    with connections['mots'].cursor() as cur:
+        cur.execute("""
+        SELECT id, phrase
+        FROM PHRASES
+        WHERE nbsyllabe = ?
+        ORDER BY RANDOM() LIMIT 1""", (nbsyll,))
+        [id, phrase] = cur.fetchone()
     phraselist = phrase.split(" ")
     nouveau = ""
 
@@ -117,7 +119,7 @@ def analyse(nbsyll, dersyll = ''):
             req = """
             AND SYLLABES.dersyll = '%s'""" % syllabe
         elif i == len(phraselist) - 1:
-            # Si dernier mot phrase mais pas de rime imposée :
+            # Si dernier mot phrase, mais pas de rime imposée :
             # Choix syllabe existant plus de 10 fois
             req = """
             AND iddersyll in (SELECT iddersyll
@@ -144,13 +146,14 @@ def analyse(nbsyll, dersyll = ''):
                 # Si pas de symbole : ponctuation vide
                 punctInside = " "
 
-            cur.execute("""
-            SELECT cgram, genre, nombre, nbsyll, verper, haspir, cvcv
-            FROM MOTS
-            WHERE ortho = ?
-            ORDER BY freqfilms DESC LIMIT 1""", (mot,))
+            with connections['mots'].cursor() as cur:
+                cur.execute("""
+                SELECT cgram, genre, nombre, nbsyll, verper, haspir, cvcv
+                FROM MOTS
+                WHERE ortho = ?
+                ORDER BY freqfilms DESC LIMIT 1""", (mot,))
 
-            info = cur.fetchone()
+                info = cur.fetchone()
 
             if len(mot) == 1 and info[6][0] == "C":
                 nouveau += phraselist[i] + "'"
@@ -196,25 +199,25 @@ def analyse(nbsyll, dersyll = ''):
                         info = info[:4] + info4 + info[5:]
 
                     req = """AND cvcv LIKE '%s'"""%(info[-1][0]+"%") + req
-                cur.execute("""
-                SELECT ortho, dersyll
-                FROM MOTS JOIN SYLLABES ON iddersyll = SYLLABES.id
-                WHERE cgram = ?
-                AND genre = ?
-                AND nombre = ?
-                AND nbsyll = ?
-                AND verper LIKE ?
-                AND haspir = ?
-                %s
-                ORDER BY RANDOM() LIMIT 1"""%req, info[:-1])
-                newWords = cur.fetchone()
+                with connections['mots'].cursor() as cur:
+                    cur.execute("""
+                    SELECT ortho, dersyll
+                    FROM MOTS JOIN SYLLABES ON iddersyll = SYLLABES.id
+                    WHERE cgram = ?
+                    AND genre = ?
+                    AND nombre = ?
+                    AND nbsyll = ?
+                    AND verper LIKE ?
+                    AND haspir = ?
+                    %s
+                    ORDER BY RANDOM() LIMIT 1"""%req, info[:-1])
+                    newWords = cur.fetchone()
                 try:
                     nouveaumot = newWords[0]
                     dersyll = newWords[1]
                 except TypeError:
                     # print(phraselist, mot, newWords)
                     if count < 10:
-                        erreur.append(id)
                         return analyse(nbsyll, syllabe)
                     else:
                         raise RecursionError("Nombre de répétition dépassés, relance le poème")
@@ -227,17 +230,16 @@ def analyse(nbsyll, dersyll = ''):
 
             nouveau += punctInside
 
-    cur.execute("""
-    SELECT PONCT
-    FROM PONCTUATION
-    WHERE freq > (SELECT abs(random() / 10000000000000000000))
-    ORDER BY random();""")
+    with connections['mots'].cursor() as cur:
+        cur.execute("""
+        SELECT PONCT
+        FROM PONCTUATION
+        WHERE freq > (SELECT abs(random() / 10000000000000000000))
+        ORDER BY random();""")
 
-    ponct = cur.fetchone()[0]
+        ponct = cur.fetchone()[0]
 
     nouveau = nouveau.strip(" ") + ponct + "\n"
-    conn.commit()
-    conn.close
     # print(id)
     return nouveau, dersyll
 
@@ -249,10 +251,7 @@ def poeme_texte(rimes, nbsyll):
     * nbsyll = [12,10,8] : 1er vers = 12 syllabes, 2e vers = 10 syllabes, 3e vers = 8 syllabes
     * Suppose rimes et nbsyll de la bonne forme (syllabes existent, nbsyll des entiers, nb lettre _ rime = len(nbsyll) )"""
     # Liste erreur : voir quelles phrases posent problème
-    global erreur
-    global chargeVar
     texteChargement = "Chargement ...\nVers déjà fait :\n\n"
-    erreur = []
     # Initialisations variables
     dictsyll = dict()
     rimes = rimes.split(" ")
@@ -319,7 +318,7 @@ def prev(forme, sylltaille, rime):
                         nbsyll[int(syllUnit2[0]) - 1] = "_ " * (int(syllUnit2[1]) - 1)
                 except IndexError:
                     # Si nb syllabe dépasse nombre vers
-                    err1 = "Vous avez dépassé le nombre de\nvers donnés dans  la forme"
+                    err1 = "Vous avez dépassé le nombre de vers donnés dans  la forme"
                     return None
             # Pas de probleme : créer les str avec les _ suivant le nb de syllabes
             if nbsyll[0] == "":
@@ -352,12 +351,13 @@ def prev(forme, sylltaille, rime):
                     else:
                         # Si syllabe pas possible
                         err1 = "Les rimes sont mal écrites"
-                        err2 = str(a[1]) + " n'existe pas\n"
+                        err2 = str(a[1]) + " n'existe pas"
                         return None
                 else:
                     # Si erreur sur la façon dont sont données les rimes
                     err1 = "Les rimes sont mals écrites"
-                    err2 = "Veuillez respecter la mise en forme :\nA=t@t, B=se …\n(avec les bons symboles correspondants\nà ceux donnés dans forme)"
+                    err2 = "Veuillez respecter la mise en forme : A=t@t, B=se … (avec les bons symboles " \
+                           "correspondants à ceux donnés dans forme)"
                     return None
 
             j = 0
