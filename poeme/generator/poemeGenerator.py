@@ -14,8 +14,6 @@ from django.db import connections
 
 symboles = ",;:…./\&'§@#!()-_$*¥€%£?"
 count = 0
-err1 = ""
-err2 = ""
 
 # Création liste des mots possibles
 
@@ -281,8 +279,8 @@ def poeme_texte(rimes, nbsyll):
 
 def prev(forme, sylltaille, rime):
 
-    global err1
-    global err2
+    err1 = ""
+    err2 = ""
 
     # Dictionnaire des noms de syllabes correspondant aux syllabes données
     syllname = dict()
@@ -301,7 +299,7 @@ def prev(forme, sylltaille, rime):
                     # Si problème dans la façon dont est la taille des syllabes
                     err1 = syllUnit1 + " est mal écrit"
                     err2 = "Veuillez respecter la mise en forme :\n 1 = 12, 2 = 6 ..."
-                    return None
+                    return None, err1, err2
                 try:
                     if int(syllUnit2[1]) > 12:
                         # Si nb syllabe dépasse 12
@@ -320,7 +318,7 @@ def prev(forme, sylltaille, rime):
                 except IndexError:
                     # Si nb syllabe dépasse nombre vers
                     err1 = "Vous avez dépassé le nombre de vers donnés dans  la forme"
-                    return None
+                    return None, err1, err2
             # Pas de probleme : créer les str avec les _ suivant le nb de syllabes
             if nbsyll[0] == "":
                 nbsyll[0] = "_ " * 11
@@ -353,13 +351,13 @@ def prev(forme, sylltaille, rime):
                         # Si syllabe pas possible
                         err1 = "Les rimes sont mal écrites"
                         err2 = str(a[1]) + " n'existe pas"
-                        return None
+                        return None, err1, err2
                 else:
                     # Si erreur sur la façon dont sont données les rimes
                     err1 = "Les rimes sont mals écrites"
                     err2 = "Veuillez respecter la mise en forme : A=t@t, B=se … (avec les bons symboles " \
                            "correspondants à ceux donnés dans forme)"
-                    return None
+                    return None, err1, err2
 
             j = 0
             for i in range(len(forme)):
@@ -375,15 +373,15 @@ def prev(forme, sylltaille, rime):
     else:
         # Si aucune forme n'est donnée
         err1 = "Vous n'avez donné aucune forme"
-        return None
+        return None, err1, err2
 
     forme = forme.replace(" ", "") # Variable globale de la forme pour être afficheé dans chargement
     print(forme)
-    return texte
+    return texte, err1, err2
 
 def main(rimes = "ABBA", syll = "1=12", rime = ""):
-    global err1
-    total = prev(rimes, syll, rime).split("\n")
+    total, err1, err2 = prev(rimes, syll, rime)
+    total = total.split("\n")
     print(total)
     nbsyll = []
     forme = ""
@@ -399,6 +397,6 @@ def main(rimes = "ABBA", syll = "1=12", rime = ""):
     except:
         err1 = "Problème lors que la génération du poème"
         print(err1)
-        return None
+        return None, err1, err2
     else:
-        return texte
+        return texte, err1, err2

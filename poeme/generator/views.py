@@ -17,9 +17,7 @@ def home(request):
             sylla = request.POST.get('sylla')
             phone = request.POST.get('phone')
 
-        poem = poemeGenerator.main(forme, sylla, phone)
-        err1 = poemeGenerator.err1
-        err2 = poemeGenerator.err2
+        poem, err1, err2 = poemeGenerator.main(forme, sylla, phone)
 
         return render(request, 'generator/home.html',
                       {'form': form, 'poem': poem, 'err1': err1, 'err2': err2})  # ajoutez cette instruction de retour
