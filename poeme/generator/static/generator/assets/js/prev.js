@@ -40,7 +40,7 @@ $(document).ready(function () {
         const err1 = previsualisationResultat[1]
         const err2 = previsualisationResultat[2]
 
-        $('#status').html('Traitement en cours...<br/>' + previsualisation);
+        $('#status').html('Génération du poème en cours...<br/>' + previsualisation);
         $('#err1').html(err1);
         $('#err2').html(err2);
 
