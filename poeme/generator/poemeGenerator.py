@@ -69,7 +69,7 @@ def analyse(nbsyll, dersyll = ''):
             GROUP BY iddersyll
             HAVING COUNT(iddersyll) >= 10)"""
         else:
-            req = """AND SYLLABES.dersyll = '%s'""" % dersyll
+            req = """AND SYLLABES.dersyll = '{}'""".format(dersyll)
 
         with connections['mots'].cursor() as cur:
             cur.execute("""
@@ -77,8 +77,8 @@ def analyse(nbsyll, dersyll = ''):
             FROM MOTS JOIN SYLLABES ON iddersyll = SYLLABES.id
             WHERE nbsyll = 1
             AND length(ortho) > 3
-            %s
-            ORDER BY RANDOM() LIMIT 1;"""%req)
+            {}
+            ORDER BY RANDOM() LIMIT 1;""".format(req))
             newWords = cur.fetchone()
 
             nouveau = newWords[0]
@@ -103,11 +103,11 @@ def analyse(nbsyll, dersyll = ''):
 
     with connections['mots'].cursor() as cur:
         cur.execute("""
-        SELECT id, phrase
+        SELECT phrase
         FROM PHRASES
-        WHERE nbsyllabe = ?
-        ORDER BY RANDOM() LIMIT 1""", (nbsyll,))
-        [id, phrase] = cur.fetchone()
+        WHERE nbsyllabe = {}
+        ORDER BY RANDOM() LIMIT 1""".format(nbsyll))
+        phrase = cur.fetchone()[0]
     phraselist = phrase.split(" ")
     nouveau = ""
 
@@ -117,7 +117,7 @@ def analyse(nbsyll, dersyll = ''):
             # Si dernier mot phrase et rime imposée :
             # Requête avec dernière syllabe
             req = """
-            AND SYLLABES.dersyll = '%s'""" % syllabe
+            AND SYLLABES.dersyll = '{}'""".format(syllabe)
         elif i == len(phraselist) - 1:
             # Si dernier mot phrase, mais pas de rime imposée :
             # Choix syllabe existant plus de 10 fois
@@ -150,10 +150,11 @@ def analyse(nbsyll, dersyll = ''):
                 cur.execute("""
                 SELECT cgram, genre, nombre, nbsyll, verper, haspir, cvcv
                 FROM MOTS
-                WHERE ortho = ?
-                ORDER BY freqfilms DESC LIMIT 1""", (mot,))
+                WHERE ortho = '{}'
+                ORDER BY freqfilms DESC LIMIT 1""".format(mot.replace(",", "")))
 
                 info = cur.fetchone()
+            print(info)
 
             if len(mot) == 1 and info[6][0] == "C":
                 nouveau += phraselist[i] + "'"
@@ -203,14 +204,14 @@ def analyse(nbsyll, dersyll = ''):
                     cur.execute("""
                     SELECT ortho, dersyll
                     FROM MOTS JOIN SYLLABES ON iddersyll = SYLLABES.id
-                    WHERE cgram = ?
-                    AND genre = ?
-                    AND nombre = ?
-                    AND nbsyll = ?
-                    AND verper LIKE ?
-                    AND haspir = ?
-                    %s
-                    ORDER BY RANDOM() LIMIT 1"""%req, info[:-1])
+                    WHERE cgram = '{}'
+                    AND genre = '{}'
+                    AND nombre = '{}'
+                    AND nbsyll = '{}'
+                    AND verper LIKE '{}'
+                    AND haspir = '{}'
+                    {}
+                    ORDER BY RANDOM() LIMIT 1""".format(info[0], info[1], info[2], info[3], info[4], info[5], req))
                     newWords = cur.fetchone()
                 try:
                     nouveaumot = newWords[0]
@@ -392,6 +393,7 @@ def main(rimes = "ABBA", syll = "1=12", rime = ""):
             forme += formeVers.split(" ")[-1] + "_"
         else:
             forme += " "
+    texte = poeme_texte(forme, nbsyll).split("\n")
     try:
         texte = poeme_texte(forme, nbsyll).split("\n")
         print(texte)
