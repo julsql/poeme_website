@@ -18,21 +18,20 @@ $(document).ready(function () {
         const sylla = form.elements["id_sylla"].value;
         const phone = form.elements["id_phone"].value;
 
-        const regexSylla = /^(\d+=\d+)(, \d+=\d+)*$/;
+        const regexSylla = /^(\d+=\d+)(, \d+=\d+)*,?$/;
         if (sylla.replace(" ", "") != "" && !regexSylla.test(sylla.trim())) {
             console.log(sylla);
             $('#err3').html("Les syllabes sont mal renseignées, il faut qu'elles ça soit de la forme : 1=12, 4=8");
             sylla = "";
         }
 
-        const regexPhone = /^\s*\w+\s*=\s*\w+(\s*,\s*\w+\s*=\s*\w+)*\s*$/;
+        const regexPhone = /^[a-zA-Z]=(?:[\x00-\x7F]+)(?:,[a-zA-Z]=(?:[\x00-\x7F]+))*,?$/;
 
         if (phone.replace(" ", "") != "" && !regexPhone.test(phone.trim())) {
             console.log(phone);
             $('#err3').html("Les rimes sont mal renseignées, il faut qu'elles ça soit de la forme : A=t@t, B=se");
             phone = "";
         }
-
 
         const previsualisationResultat = prev(forme, sylla, phone);
 
@@ -96,7 +95,7 @@ function prev(forme = "ABBA", sylltaille = "", rime = "") {
                 } catch (err) {
                     // Si problème dans la façon dont est la taille des syllabes
                     err1 = syllUnit1 + " est mal écrit";
-                    err2 = "Veuillez respecter la mise en forme :\n 1 = 12, 2 = 6 ...";
+                    err2 = "Veuillez respecter la mise en forme :\n 1=12, 2=6 ...";
                     return [null, err1, err2];
                 }
                 try {
@@ -119,7 +118,7 @@ function prev(forme = "ABBA", sylltaille = "", rime = "") {
                     }
                 } catch (err) {
                     // Si nb syllabe dépasse nombre vers
-                    err1 = "Vous avez dépassé le nombre de vers donnés dans  la forme";
+                    err1 = "Vous avez dépassé le nombre de vers donnés dans la forme";
                     return [null, err1, err2];
                 }
             }
@@ -131,7 +130,7 @@ function prev(forme = "ABBA", sylltaille = "", rime = "") {
             }
             for (let a = 1; a < nbsyll.length; a++) {
                 if (nbsyll[a] === "") {
-                    nbsyll[a] = "_ ".repeat(nbsyll[a - 1].split("_").length);
+                    nbsyll[a] = "_ ".repeat(nbsyll[a - 1].split("_").length - 1);
                 }
             }
         } else {

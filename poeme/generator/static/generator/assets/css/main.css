@@ -3842,3 +3842,17 @@ input, select, textarea {
 			}
 
 		}
+
+		@media screen and (max-width: 980px) {
+		    #result {
+		        text-align: left;
+		    }
+
+		    section.special, article.special {
+                text-align: left;
+            }
+
+            section.special h2, article.special h2 {
+                text-align: center;
+            }
+		}

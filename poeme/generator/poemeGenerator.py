@@ -374,6 +374,8 @@ def prev(forme, sylltaille, rime):
     return texte, err1, err2
 
 def main(rimes = "ABBA", syll = "1=12", rime = ""):
+    rime = rime.strip(",")
+    syll = syll.strip(",")
     total, err1, err2 = prev(rimes, syll, rime)
     total = total.split("\n")
     nbsyll = []
