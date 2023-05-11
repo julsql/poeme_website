@@ -15,8 +15,8 @@ $(document).ready(function () {
 
         // Récupère les valeurs des champs de formulaire
         const forme = form.elements["id_forme"].value;
-        const sylla = form.elements["id_sylla"].value.replace(" ", "");
-        const phone = form.elements["id_phone"].value.replace(" ", "");
+        let sylla = form.elements["id_sylla"].value.replace(" ", "");
+        let phone = form.elements["id_phone"].value.replace(" ", "");
 
         const regexSylla = /^(\d+=\d+)(, \d+=\d+)*,?$/;
         if (sylla != "" && !regexSylla.test(sylla.trim())) {
