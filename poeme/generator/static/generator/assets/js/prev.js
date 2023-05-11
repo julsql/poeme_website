@@ -1,3 +1,25 @@
+const forme_element = document.getElementById("id_forme");
+const sylla_element = document.getElementById("id_sylla");
+
+const sonnet = document.getElementById("sonnet");
+const haiku = document.getElementById("haiku");
+const ballade = document.getElementById("ballade");
+
+sonnet.addEventListener("click", function() {
+  forme_element.value = "ABBA CDDC EEF GGF";
+  sylla_element.value = "1=12";
+});
+
+haiku.addEventListener("click", function() {
+  forme_element.value = "ABC";
+  sylla_element.value = "1=5, 2=6, 3=5";
+});
+
+ballade.addEventListener("click", function() {
+  forme_element.value = "ABAB BC CDCD";
+  sylla_element.value = "1=10";
+});
+
 $(document).ready(function () {
     $('#my-form').submit(function (event) {
         event.preventDefault(); // empêche l'envoi normal du formulaire
@@ -15,8 +37,10 @@ $(document).ready(function () {
 
         // Récupère les valeurs des champs de formulaire
         const forme = form.elements["id_forme"].value;
-        let sylla = form.elements["id_sylla"].value.replace(" ", "");
-        let phone = form.elements["id_phone"].value.replace(" ", "");
+        let sylla = form.elements["id_sylla"].value.replace(/\s+/g, "");
+        let phone = form.elements["id_phone"].value.replace(/\s+/g, "");;
+        console.log(sylla)
+        console.log(phone)
 
         const regexSylla = /^(\d+=\d+)(, \d+=\d+)*,?$/;
         if (sylla != "" && !regexSylla.test(sylla.trim())) {
@@ -27,7 +51,7 @@ $(document).ready(function () {
 
         const regexPhone = /^[a-zA-Z]=(?:[\x00-\x7F]+)(?:,[a-zA-Z]=(?:[\x00-\x7F]+))*,?$/;
 
-        if (phone.replace(" ", "") != "" && !regexPhone.test(phone.trim())) {
+        if (phone != "" && !regexPhone.test(phone.trim())) {
             console.log(phone);
             $('#err3').html("Les rimes sont mal renseignées, il faut qu'elles ça soit de la forme : A=t@t, B=se");
             phone = "";

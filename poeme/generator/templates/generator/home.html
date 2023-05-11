@@ -19,6 +19,13 @@
                     <h2>Générateur</h2>
                 </header>
                 <a href="{% url 'aide' %}" target="_blank">Aide phonétique</a>
+                <p style="margin: 10px 0;">Quelques exemples de forme de poèmes :</p>
+
+                <div id="" style="display: block; margin-bottom: 20px;">
+                    <div id="sonnet" class="button">Sonnet</div>
+                    <div id="haiku" class="button">Haïku</div>
+                    <div id="ballade" class="button">Ballade</div>
+                </div>
 
             <form id="my-form" action="" method="post" novalidate>
                 {% csrf_token %}
@@ -70,4 +77,5 @@
 {% block javascript %}
 <script src="{% static 'generator/assets/js/prev.js' %}"></script>
 <script>console.log({{poem}});</script>
+
 {% endblock %}
