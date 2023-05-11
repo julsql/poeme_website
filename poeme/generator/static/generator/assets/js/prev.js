@@ -15,11 +15,11 @@ $(document).ready(function () {
 
         // Récupère les valeurs des champs de formulaire
         const forme = form.elements["id_forme"].value;
-        const sylla = form.elements["id_sylla"].value;
-        const phone = form.elements["id_phone"].value;
+        const sylla = form.elements["id_sylla"].value.replace(" ", "");
+        const phone = form.elements["id_phone"].value.replace(" ", "");
 
         const regexSylla = /^(\d+=\d+)(, \d+=\d+)*,?$/;
-        if (sylla.replace(" ", "") != "" && !regexSylla.test(sylla.trim())) {
+        if (sylla != "" && !regexSylla.test(sylla.trim())) {
             console.log(sylla);
             $('#err3').html("Les syllabes sont mal renseignées, il faut qu'elles ça soit de la forme : 1=12, 4=8");
             sylla = "";
