@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 
-# Génère des phrases de poésie avec possibilité de choisir les rimes, le nombre de syllabes, de paragraphes, de vers etc...
+# Génère des phrases de poésie avec possibilité de choisir les rimes, le nombre de syllabes, de paragraphes,
+# de vers etc...
 
 # Documents nécéssaires dans le fichier :
 # PoemeDB.sqlite3
@@ -346,13 +347,14 @@ def prev(forme, sylltaille, rime):
                         # Si syllabe pas possible
                         err1 = "Les rimes sont mal écrites"
                         err2 = str(a[1]) + " n'existe pas"
-                        return None, err1, err2
+
+                        #return None, err1, err2
                 else:
                     # Si erreur sur la façon dont sont données les rimes
                     err1 = "Les rimes sont mals écrites"
                     err2 = "Veuillez respecter la mise en forme : A=t@t, B=se … (avec les bons symboles " \
                            "correspondants à ceux donnés dans forme)"
-                    return None, err1, err2
+                    #return None, err1, err2
 
             j = 0
             for i in range(len(forme)):
@@ -370,12 +372,11 @@ def prev(forme, sylltaille, rime):
         err1 = "Vous n'avez donné aucune forme"
         return None, err1, err2
 
-    forme = forme.replace(" ", "") # Variable globale de la forme pour être afficheé dans chargement
     return texte, err1, err2
 
 def main(rimes = "ABBA", syll = "1=12", rime = ""):
-    rime = rime.strip(",")
-    syll = syll.strip(",")
+    rime = rime.replace(" ", "").strip(",")
+    syll = syll.replace(" ", "").strip(",")
     total, err1, err2 = prev(rimes, syll, rime)
     total = total.split("\n")
     nbsyll = []

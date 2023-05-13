@@ -39,20 +39,16 @@ $(document).ready(function () {
         const forme = form.elements["id_forme"].value;
         let sylla = form.elements["id_sylla"].value.replace(/\s+/g, "");
         let phone = form.elements["id_phone"].value.replace(/\s+/g, "");;
-        console.log(sylla)
-        console.log(phone)
 
-        const regexSylla = /^(\d+=\d+)(, \d+=\d+)*,?$/;
+        const regexSylla = /^(\d+=\d+)(,\d+=\d+)*,?$/;
         if (sylla != "" && !regexSylla.test(sylla.trim())) {
-            console.log(sylla);
             $('#err3').html("Les syllabes sont mal renseignées, il faut qu'elles ça soit de la forme : 1=12, 4=8");
             sylla = "";
         }
 
-        const regexPhone = /^[a-zA-Z]=(?:[\x00-\x7F]+)(?:,[a-zA-Z]=(?:[\x00-\x7F]+))*,?$/;
+        const regexPhone = /^[a-zA-Z]=(?:[\x00-\x7F]+)(,[a-zA-Z]=(?:[\x00-\x7F]+))*,?$/;
 
         if (phone != "" && !regexPhone.test(phone.trim())) {
-            console.log(phone);
             $('#err3').html("Les rimes sont mal renseignées, il faut qu'elles ça soit de la forme : A=t@t, B=se");
             phone = "";
         }
