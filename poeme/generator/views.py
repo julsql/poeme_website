@@ -1,6 +1,6 @@
 from django.shortcuts import render
-import poemeGenerator
-from ..generator.forms import QuizForm
+from generator import poemeGenerator
+from generator.forms import QuizForm
 
 
 # Create your views here.
