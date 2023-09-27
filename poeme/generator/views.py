@@ -1,7 +1,7 @@
 from django.shortcuts import render
-import generator.poemeGenerator as poemeGenerator
-from generator.forms import QuizForm
-import threading
+import poemeGenerator
+from ..generator.forms import QuizForm
+
 
 # Create your views here.
 
@@ -42,6 +42,7 @@ def home(request):
 def aide(request):
     aidephon = poemeGenerator.aidephon
     return render(request, 'generator/aide.html', {'aidephon': aidephon})
+
 
 def app(request):
     return render(request, 'generator/app.html')
