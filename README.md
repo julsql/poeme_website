@@ -39,7 +39,7 @@ You can select an existing form (Sonnet: ABBA CDDC EEF GGF) fo create a new one.
 1. Clone git repository
 
     ```bash
-    git clone git@github.com:juliette39/poeme_website.git
+    git clone git@github.com:julsql/poeme_website.git
     ```
 
 2. Don't forget to add the settings file in `./poeme/poeme`
@@ -97,24 +97,24 @@ sudo nano /etc/apache2/sites-available/myconfig.conf
 ```
 <VirtualHost *:80>
     ServerName poeme.h.minet.net
-    ServerAdmin juliette.debono@telecom-sudparis.eu
+    ServerAdmin admin@email.fr
 
     AddDefaultCharset UTF-8
 
-    Alias /static /home/juliettedebono/poeme_website/poeme/generator/static/
-    <Directory /home/juliettedebono/poeme_website/poeme/generator/static/>
+    Alias /static /home/username/poeme_website/poeme/generator/static/
+    <Directory /home/username/poeme_website/poeme/generator/static/>
         Require all granted
     </Directory>
 
-    <Directory /home/juliettedebono/poeme_website/poeme/poeme/>
+    <Directory /home/username/poeme_website/poeme/poeme/>
         <Files wsgi.py>
             Require all granted
         </Files>
     </Directory>
 
-    WSGIDaemonProcess poeme_process python-home=/home/juliettedebono/poeme_website/env python-path=/home/juliettedebono/poeme_website/poeme
+    WSGIDaemonProcess poeme_process python-home=/home/username/poeme_website/env python-path=/home/username/poeme_website/poeme
     WSGIProcessGroup poeme_process
-    WSGIScriptAlias / /home/juliettedebono/poeme_website/poeme/poeme/wsgi.py process-group=poeme_process
+    WSGIScriptAlias / /home/username/poeme_website/poeme/poeme/wsgi.py process-group=poeme_process
 
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
@@ -131,4 +131,4 @@ sudo service apache2 restart
 
 ## Authors
 
-- Juliette Debono
+- Jul SQL
