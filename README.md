@@ -8,7 +8,7 @@ Poeme, it's a scholar project to generate random French poems.
 
 In short, you select the format wanted for the poem, and it will generate a poem with the rhymes and syllable wanted.
 
-> Website available at address: [poeme.h.minet.net](http://poeme.h.minet.net)
+> Website available at address: [poeme.julsql.fr](http://poeme.julsql.fr)
 
 ## Table of Contents
 
@@ -47,7 +47,7 @@ You can select an existing form (Sonnet: ABBA CDDC EEF GGF) fo create a new one.
 3. Configure the python virtual environment
 
     ```bash
-    pip install virtualenv
+    sudo apt install python3-venv
     cd poeme_website
     python3 -m venv env
     source env/bin/activate
@@ -96,7 +96,7 @@ sudo nano /etc/apache2/sites-available/myconfig.conf
 
 ```
 <VirtualHost *:80>
-    ServerName poeme.h.minet.net
+    ServerName url.domain.com
     ServerAdmin admin@email.fr
 
     AddDefaultCharset UTF-8
